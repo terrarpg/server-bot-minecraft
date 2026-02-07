@@ -1,0 +1,12 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 25565,
+    "version": "1.20.1"
+  },
+  "bots": {
+    "prefix": "WebBot",
+    "autoReconnect": true,
+    "viewDistance": 6
+  }
+}
