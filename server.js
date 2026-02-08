@@ -5,10 +5,10 @@ const readline = require('readline');
 
 // Configuration par défaut
 const config = {
-  host: 'localhost',
-  port: 25565,
-  version: '1.20.1',
-  botCount: 1,
+  host: 'zendariom.enderman.cloud',
+  port: 28707,
+  version: '1.21.1',
+  botCount: 9,
   botPrefix: 'Bot'
 };
 
