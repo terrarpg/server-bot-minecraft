@@ -465,11 +465,12 @@ app.get('/ping', (req, res) => {
 });
 
 // ==============================
-// INTERFACE WEB COMPLÈTE
+// INTERFACE WEB COMPLÈTE - CORRIGÉE
 // ==============================
 app.get('/', (req, res) => {
   const isRender = process.env.RENDER === 'true';
   const externalUrl = process.env.RENDER_EXTERNAL_URL || `http://${options.host}:${options.port}`;
+  const renderInfo = isRender ? `<p>🚀 Hébergé sur Render.com | URL: ${externalUrl}</p>` : '';
   
   res.send(`
   <!DOCTYPE html>
@@ -875,7 +876,7 @@ app.get('/', (req, res) => {
       <footer>
         <p>Minecraft Bot Commander v2.0.0 | Développé avec Node.js & Mineflayer</p>
         <p>Serveur actuel: <strong>${commander.serverConfig.host}:${commander.serverConfig.port}</strong> | Bots maximum: ${commander.serverConfig.maxBots}</p>
-        ${isRender ? `<p>🚀 Hébergé sur Render.com | URL: ${externalUrl}</p>` : ''}
+        ${renderInfo}
       </footer>
     </div>
 
@@ -983,44 +984,43 @@ app.get('/', (req, res) => {
                               bot.status === 'connecting' ? 'connecting' : 'disconnected';
             
             const botItem = document.createElement('div');
-            botItem.className = `bot-item ${statusClass}`;
-            botItem.innerHTML = \`
-              <div class="bot-header">
-                <div class="bot-name">
-                  <i class="fas fa-robot"></i> \${bot.name}
-                  <span class="status-badge status-\${bot.status}">\${bot.status}</span>
-                </div>
-                <div>
-                  <button class="btn" onclick="controlBot('\${bot.id}')" style="padding: 5px 10px; font-size: 12px;">
-                    <i class="fas fa-gamepad"></i>
-                  </button>
-                  <button class="btn btn-danger" onclick="removeBot('\${bot.id}')" style="padding: 5px 10px; font-size: 12px;">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="bot-details">
-                <div>
-                  <i class="fas fa-map-marker-alt"></i>
-                  \${bot.position.x}, \${bot.position.y}, \${bot.position.z}
-                </div>
-                <div>
-                  <i class="fas fa-heart"></i> PV: \${bot.health}
-                </div>
-                <div>
-                  <i class="fas fa-utensils"></i> Nourriture: \${bot.food}
-                </div>
-                <div>
-                  <i class="fas fa-clock"></i> Connecté: \${Math.floor(bot.uptime / 1000)}s
-                </div>
-                <div>
-                  <i class="fas fa-running"></i> Activité: \${bot.activity}
-                </div>
-                <div>
-                  <i class="fas fa-server"></i> \${bot.server}
-                </div>
-              </div>
-            \`;
+            botItem.className = 'bot-item ' + statusClass;
+            botItem.innerHTML = 
+              '<div class="bot-header">' +
+                '<div class="bot-name">' +
+                  '<i class="fas fa-robot"></i> ' + bot.name +
+                  '<span class="status-badge status-' + bot.status + '">' + bot.status + '</span>' +
+                '</div>' +
+                '<div>' +
+                  '<button class="btn" onclick="controlBot(\\'' + bot.id + '\\')" style="padding: 5px 10px; font-size: 12px;">' +
+                    '<i class="fas fa-gamepad"></i>' +
+                  '</button>' +
+                  '<button class="btn btn-danger" onclick="removeBot(\\'' + bot.id + '\\')" style="padding: 5px 10px; font-size: 12px;">' +
+                    '<i class="fas fa-trash"></i>' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+              '<div class="bot-details">' +
+                '<div>' +
+                  '<i class="fas fa-map-marker-alt"></i> ' +
+                  bot.position.x + ', ' + bot.position.y + ', ' + bot.position.z +
+                '</div>' +
+                '<div>' +
+                  '<i class="fas fa-heart"></i> PV: ' + bot.health +
+                '</div>' +
+                '<div>' +
+                  '<i class="fas fa-utensils"></i> Nourriture: ' + bot.food +
+                '</div>' +
+                '<div>' +
+                  '<i class="fas fa-clock"></i> Connecté: ' + Math.floor(bot.uptime / 1000) + 's' +
+                '</div>' +
+                '<div>' +
+                  '<i class="fas fa-running"></i> Activité: ' + bot.activity +
+                '</div>' +
+                '<div>' +
+                  '<i class="fas fa-server"></i> ' + bot.server +
+                '</div>' +
+              '</div>';
             botsList.appendChild(botItem);
           });
           
@@ -1054,7 +1054,7 @@ app.get('/', (req, res) => {
         commands.forEach(cmd => {
           const btn = document.createElement('div');
           btn.className = 'command-btn';
-          btn.innerHTML = \`<i class="fas \${cmd.icon}"></i> \${cmd.text}\`;
+          btn.innerHTML = '<i class="fas ' + cmd.icon + '"></i> ' + cmd.text;
           btn.onclick = cmd.action;
           quickCommands.appendChild(btn);
         });
@@ -1083,7 +1083,7 @@ app.get('/', (req, res) => {
             if (!params.player) continue;
           }
           
-          await fetch(\`/api/bots/\${bot.id}/command\`, {
+          await fetch('/api/bots/' + bot.id + '/command', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ command, params })
@@ -1122,11 +1122,11 @@ app.get('/', (req, res) => {
               location.reload();
             }, 2000);
           } else {
-            configStatus.innerHTML = \`<div style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Erreur: \${result.error}</div>\`;
+            configStatus.innerHTML = '<div style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Erreur: ' + result.error + '</div>';
           }
           
         } catch (error) {
-          configStatus.innerHTML = \`<div style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Erreur: \${error.message}</div>\`;
+          configStatus.innerHTML = '<div style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Erreur: ' + error.message + '</div>';
         }
       }
 
@@ -1139,7 +1139,7 @@ app.get('/', (req, res) => {
         const behavior = document.getElementById('botBehavior').value;
         
         for (let i = 0; i < count; i++) {
-          const botName = count === 1 ? name : \`\${name}\${i+1}\`;
+          const botName = count === 1 ? name : name + (i + 1);
           
           try {
             const response = await fetch('/api/bots/create', {
@@ -1154,14 +1154,14 @@ app.get('/', (req, res) => {
             
             const result = await response.json();
             if (result.success) {
-              console.log(\`Bot \${botName} créé\`);
+              console.log('Bot ' + botName + ' créé');
             }
             
             // Attente entre chaque création
             await new Promise(resolve => setTimeout(resolve, 1000));
             
           } catch (error) {
-            alert(\`Erreur création bot \${botName}: \${error.message}\`);
+            alert('Erreur création bot ' + botName + ': ' + error.message);
           }
         }
         
@@ -1185,7 +1185,7 @@ app.get('/', (req, res) => {
           if (bot.status === 'connected') {
             const option = document.createElement('option');
             option.value = bot.id;
-            option.textContent = \`\${bot.name} (\${bot.position.x}, \${bot.position.y}, \${bot.position.z})\`;
+            option.textContent = bot.name + ' (' + bot.position.x + ', ' + bot.position.y + ', ' + bot.position.z + ')';
             select.appendChild(option);
           }
         });
@@ -1200,40 +1200,36 @@ app.get('/', (req, res) => {
         
         switch(commandType) {
           case 'chat':
-            html = \`
-              <div class="form-group">
-                <label>Message</label>
-                <input type="text" id="paramMessage" placeholder="Entrez votre message..." required>
-              </div>
-            \`;
+            html = 
+              '<div class="form-group">' +
+                '<label>Message</label>' +
+                '<input type="text" id="paramMessage" placeholder="Entrez votre message..." required>' +
+              '</div>';
             break;
           case 'move':
-            html = \`
-              <div class="form-group">
-                <label>Coordonnées</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                  <input type="number" id="paramX" placeholder="X" required>
-                  <input type="number" id="paramY" placeholder="Y" required>
-                  <input type="number" id="paramZ" placeholder="Z" required>
-                </div>
-              </div>
-            \`;
+            html = 
+              '<div class="form-group">' +
+                '<label>Coordonnées</label>' +
+                '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">' +
+                  '<input type="number" id="paramX" placeholder="X" required>' +
+                  '<input type="number" id="paramY" placeholder="Y" required>' +
+                  '<input type="number" id="paramZ" placeholder="Z" required>' +
+                '</div>' +
+              '</div>';
             break;
           case 'follow':
-            html = \`
-              <div class="form-group">
-                <label>Nom du Joueur</label>
-                <input type="text" id="paramPlayer" placeholder="Nom exact du joueur" required>
-              </div>
-            \`;
+            html = 
+              '<div class="form-group">' +
+                '<label>Nom du Joueur</label>' +
+                '<input type="text" id="paramPlayer" placeholder="Nom exact du joueur" required>' +
+              '</div>';
             break;
           case 'attack':
-            html = \`
-              <div class="form-group">
-                <label>Nom de la Cible</label>
-                <input type="text" id="paramTarget" placeholder="Nom du monstre/joueur" required>
-              </div>
-            \`;
+            html = 
+              '<div class="form-group">' +
+                '<label>Nom de la Cible</label>' +
+                '<input type="text" id="paramTarget" placeholder="Nom du monstre/joueur" required>' +
+              '</div>';
             break;
           default:
             html = '';
@@ -1274,7 +1270,7 @@ app.get('/', (req, res) => {
         }
         
         try {
-          const response = await fetch(\`/api/bots/\${botId}/command\`, {
+          const response = await fetch('/api/bots/' + botId + '/command', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ command, params })
@@ -1283,22 +1279,22 @@ app.get('/', (req, res) => {
           const result = await response.json();
           
           if (result.success) {
-            alert(\`✅ Commande exécutée: \${result.message}\`);
+            alert('✅ Commande exécutée: ' + result.message);
             hideModal('commandModal');
             loadBots();
           } else {
-            alert(\`❌ Erreur: \${result.error}\`);
+            alert('❌ Erreur: ' + result.error);
           }
           
         } catch (error) {
-          alert(\`❌ Erreur: \${error.message}\`);
+          alert('❌ Erreur: ' + error.message);
         }
       }
 
       // Supprimer un bot
       async function removeBot(botId) {
         if (confirm('Supprimer ce bot?')) {
-          await fetch(\`/api/bots/\${botId}\`, { method: 'DELETE' });
+          await fetch('/api/bots/' + botId, { method: 'DELETE' });
           loadBots();
         }
       }
@@ -1328,24 +1324,23 @@ app.get('/', (req, res) => {
           
           switch(entry.type) {
             case 'command':
-              content = \`<span class="log-command">[CMD] \${entry.message}</span>\`;
+              content = '<span class="log-command">[CMD] ' + entry.message + '</span>';
               break;
             case 'chat':
-              content = \`<span class="log-chat">[CHAT] \${entry.message}</span>\`;
+              content = '<span class="log-chat">[CHAT] ' + entry.message + '</span>';
               break;
             case 'system':
-              content = \`<span class="log-system">[SYS] \${entry.message}</span>\`;
+              content = '<span class="log-system">[SYS] ' + entry.message + '</span>';
               break;
             case 'error':
-              content = \`<span class="log-error">[ERR] \${entry.message}</span>\`;
+              content = '<span class="log-error">[ERR] ' + entry.message + '</span>';
               break;
           }
           
-          div.innerHTML = \`
-            <span class="log-time">\${time}</span>
-            \${content}
-            <span style="color: #64748b; float: right;">(\${entry.botCount} bots)</span>
-          \`;
+          div.innerHTML = 
+            '<span class="log-time">' + time + '</span> ' +
+            content +
+            '<span style="color: #64748b; float: right;">(' + entry.botCount + ' bots)</span>';
           historyLog.appendChild(div);
         });
       }
@@ -1378,11 +1373,11 @@ app.get('/', (req, res) => {
         const secs = seconds % 60;
         
         if (hours > 0) {
-          return \`\${hours}h \${minutes}m\`;
+          return hours + 'h ' + minutes + 'm';
         } else if (minutes > 0) {
-          return \`\${minutes}m \${secs}s\`;
+          return minutes + 'm ' + secs + 's';
         } else {
-          return \`\${secs}s\`;
+          return secs + 's';
         }
       }
     </script>
