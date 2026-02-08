@@ -455,8 +455,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     uptime: Math.floor(process.uptime()),
-    bots: commander.stats.activeBots,
-    server: commander.serverConfig
+    bots: commander.stats.activeBots,    
   });
 });
 
